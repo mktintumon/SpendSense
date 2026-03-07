@@ -79,11 +79,27 @@ function ExpenseList() {
   }, [page, pageSize, search]);
 
 
-  const columns: GridColDef[] = [
-    { field: "date", headerName: "Date", width: 120 },
+  const columns: GridColDef<Expense>[] = [
+    { field: "date", headerName: "Date", width: 120 ,
+      valueFormatter: (value : string) =>{
+        if (!value) return "";
+
+        const date = new Date(value);
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      }
+    },
     { field: "vendor", headerName: "Vendor", width: 150 },
     { field: "category", headerName: "Category", width: 130 },
-    { field: "amount", headerName: "Amount", width: 120 },
+    {
+      field: "amount",
+      headerName: "Amount",
+      width: 130,
+      valueFormatter: (value : number) => `₹ ${value}`,
+    },
     { field: "anomaly", headerName: "Anomaly", width: 130, 
       renderCell: (params) => 
         params.value ? <Chip label="Anomaly" color="error" /> : "Normal"
@@ -92,7 +108,10 @@ function ExpenseList() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 250,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      width: 220,
       renderCell: (params) => (
         <>
           <Button

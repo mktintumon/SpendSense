@@ -78,7 +78,6 @@ spendsense
 │   ├── components
 │   ├── api
 │   ├── pages
-│   └── context
 │
 └── README.md
 ```
@@ -157,9 +156,8 @@ SpendSense dashboard provides:
 ## 🚀 Future Improvements
 
 * Authentication (JWT)
-* Charts & advanced analytics
 * Mobile-optimized UI
-* AI-based spending insights
+* AI-based features
 
 ---
 
