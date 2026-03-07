@@ -6,8 +6,8 @@ import com.expenseTracker.exception.ResourceNotFoundException;
 import com.expenseTracker.model.Expense;
 import com.expenseTracker.model.VendorRule;
 import com.expenseTracker.repository.ExpenseRepository;
-import com.expenseTracker.util.CategoryMatcher;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +19,28 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final RuleService ruleService;
     private final AnomalyService anomalyService;
+
+    // Paginated API
+    public Page<ExpenseResponseDTO> getExpenses(
+            int page, int size, String search, String sortBy, String sortDir
+    ){
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                    ? Sort.by(sortBy).descending()
+                    : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Expense> expensePage;
+
+        if(search != null && !search.isEmpty()){
+            expensePage = expenseRepository.findByVendorContainingIgnoreCase(search,pageable);
+        }
+        else{
+            expensePage = expenseRepository.findAll(pageable);
+        }
+
+        return expensePage.map(this::mapToDTO);
+    }
 
     public List<ExpenseResponseDTO> getAllExpenses(){
         return expenseRepository.findAll()

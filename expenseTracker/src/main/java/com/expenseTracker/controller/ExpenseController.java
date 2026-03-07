@@ -7,6 +7,7 @@ import com.expenseTracker.service.CsvService;
 import com.expenseTracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,21 @@ public class ExpenseController {
 
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Expenses fetched successfully", expenses)
+        );
+    }
+
+    @GetMapping("/getExpenses")
+    public ResponseEntity<ApiResponse<Page<ExpenseResponseDTO>>> getExpenses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ){
+        Page<ExpenseResponseDTO> expenses = expenseService.getExpenses(page,size,search,sortBy,sortDir);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Expense Added successfully" , expenses)
         );
     }
 

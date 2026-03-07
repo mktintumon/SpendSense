@@ -15,9 +15,10 @@ It supports rule-based vendor categorization, anomaly detection for unusual expe
 * 🚨 Automatic anomaly detection (expense > 3× category average)
 * 📊 Dashboard with monthly analytics
 * 🏆 Top vendor spending insights
-* 📚 REST APIs with Swagger documentation
+* 📃 Server-side pagination
+* 🔍 Expense filtering & search by vendor
 * ⚠️ Global exception handling
-* 📱 Responsive UI with Material UI
+* 📚 REST APIs with Swagger documentation
 
 ---
 
@@ -156,8 +157,6 @@ SpendSense dashboard provides:
 ## 🚀 Future Improvements
 
 * Authentication (JWT)
-* Expense filtering & search
-* Pagination
 * Charts & advanced analytics
 * Mobile-optimized UI
 * AI-based spending insights

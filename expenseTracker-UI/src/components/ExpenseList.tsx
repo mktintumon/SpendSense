@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import API from "../api/api";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Chip,
   Box,
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
+  Chip,
+  TextField,
 } from "@mui/material";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import CsvUpload from "./CsvUpload";
 import ExpenseForm from "./ExpenseForm";
 import { useSnackbar } from "notistack";
@@ -35,14 +30,31 @@ function ExpenseList() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [expenses, setExpense] = useState<Expense[]>([]);
+  const[rows, setRows] = useState<Expense[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [editData, setEditData] = useState<Expense | null>(null);
 
+  const[page, setPage] = useState(0);
+  const[pageSize, setPageSize] = useState(10);
+  const[rowCount, setRowCount] = useState(0);
+  const[search, setSearch] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+
   const fetchExpenses = async () => {
-    const result = await API.get<Expense[]>("/expenses");
-    setExpense(result); // because of response interceptor, result is already unwrapped data
+    setLoading(true);
+
+    const result = await API.get<any>(
+      `/getExpenses?page=${page}&size=${pageSize}&search=${search}`
+    );
+    
+    setRows(result.content);
+    setRowCount(result.totalElements);
+
+    setLoading(false);
   };
+
 
   const deleteExpense = async (id: number) => {
     await API.delete(`/deleteExpense/${id}`);
@@ -50,22 +62,66 @@ function ExpenseList() {
     fetchExpenses();
   };
 
+
   const handleAddExpense = () => {
     setOpenModal(true);
   };
+
 
   const handleCloseModal = () => {
     setOpenModal(false);
     fetchExpenses();
   };
 
+
   useEffect(() => {
     fetchExpenses();
-  }, []);
+  }, [page, pageSize, search]);
+
+
+  const columns: GridColDef[] = [
+    { field: "date", headerName: "Date", width: 120 },
+    { field: "vendor", headerName: "Vendor", width: 150 },
+    { field: "category", headerName: "Category", width: 130 },
+    { field: "amount", headerName: "Amount", width: 120 },
+    { field: "anomaly", headerName: "Anomaly", width: 130, 
+      renderCell: (params) => 
+        params.value ? <Chip label="Anomaly" color="error" /> : "Normal"
+    },
+    { field: "description", headerName: "Description", width: 250 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 250,
+      renderCell: (params) => (
+        <>
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ mr: 1 }}
+            onClick={() => {
+              setEditData(params.row);
+              setOpenModal(true);
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => deleteExpense(params.row.id)}
+          >
+            Delete
+          </Button>
+        </>
+      )
+    }
+  ]
+
 
   return (
     <Box>
-      {/* Header with title and buttons */}
+      {/* Header  --> header name, search bar, add expense button, upload csv button  */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -75,72 +131,46 @@ function ExpenseList() {
         sx={{ backgroundColor: "#f5f5f5", borderRadius: "4px" }}
       >
         <Box sx={{ fontSize: "24px", fontWeight: "bold" }}>Expense List</Box>
+
         <Box display="flex" gap={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddExpense}
-          >
+          <TextField
+            size="small"
+            label="Search Vendor"
+            value={search}
+            onChange={(e) => {
+              setPage(0);
+              setSearch(e.target.value);
+            }}
+          />
+
+          <Button variant="contained" onClick={handleAddExpense}>
             Add Expense
           </Button>
+
           <CsvUpload />
         </Box>
       </Box>
 
-      {/* Expense Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Vendor</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Anomaly</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
+      {/* Data Grid */}
+      <DataGrid
+        loading={loading}
+        rows={rows}
+        columns={columns}
+        autoHeight
+        pagination
+        paginationMode="server"
+        rowCount={rowCount}
+        pageSizeOptions={[5, 10, 20]}
 
-          <TableBody>
-            {expenses.map((exp) => (
-              <TableRow key={exp.id}>
-                <TableCell>{exp.date}</TableCell>
-                <TableCell>{exp.vendor}</TableCell>
-                <TableCell>{exp.category}</TableCell>
-                <TableCell>₹ {exp.amount}</TableCell>
-                <TableCell>
-                  {exp.anomaly ? <Chip label="Anomaly" color="error" /> : "NA"}
-                </TableCell>
-                <TableCell>{exp.description}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    sx={{ mr: 1 }}
-                    onClick={() => {
-                      setEditData(exp);
-                      setOpenModal(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
+        paginationModel={{ page, pageSize }} // IMPORTANT: This is needed to keep the pagination state in sync with the DataGrid
 
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => deleteExpense(exp.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setPageSize(model.pageSize);
+        }}
+      />
 
-      {/* Modal for Add Expense Form */}
+      {/* Modal */}
       <Dialog
         open={openModal}
         onClose={() => {
@@ -151,10 +181,10 @@ function ExpenseList() {
         fullWidth
       >
         <DialogTitle>{editData ? "Edit Expense" : "Add Expense"}</DialogTitle>
+
         <DialogContent>
           <Box mt={2}>
             <ExpenseForm
-             // key={editData ? editData.id : "new"} // force remount to reset form when switching between edit and add
               onClose={() => {
                 setEditData(null);
                 handleCloseModal();
