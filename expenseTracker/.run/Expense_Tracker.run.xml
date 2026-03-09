@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Expense_Tracker" type="Application" factoryName="Application">
+    <envs>
+      <env name="GEMINI_KEY" value="AIzaSyDcpUjs4HR36pXp9HejLQ0uk13HsnUL_OI" />
+      <env name="GEMINI_URL" value="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.expenseTracker.ExpenseTrackerApplication" />
+    <module name="expenseTracker" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

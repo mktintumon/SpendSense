@@ -1,0 +1,15 @@
+Categorize this expense into one of the following categories.
+
+Categories:
+Food
+Bills
+Travel
+Shopping
+Utilities
+Entertainment
+Others
+
+Vendor: %s
+Description: %s
+
+Return ONLY the category name.

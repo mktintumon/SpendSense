@@ -19,6 +19,8 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final RuleService ruleService;
     private final AnomalyService anomalyService;
+    private final AIService aiService;
+
 
     // Paginated API
     public Page<ExpenseResponseDTO> getExpenses(
@@ -45,19 +47,11 @@ public class ExpenseService {
     public List<ExpenseResponseDTO> getAllExpenses(){
         return expenseRepository.findAll()
                 .stream()
-                .map(e -> ExpenseResponseDTO.builder()
-                        .id(e.getId())
-                        .date(e.getDate())
-                        .amount(e.getAmount())
-                        .vendor(e.getVendor())
-                        .description(e.getDescription())
-                        .category(e.getCategory())
-                        .anomaly(e.isAnomaly())
-                        .build())
+                .map(this::mapToDTO)
                 .toList();
     }
 
-    public ExpenseResponseDTO addExpense(ExpenseRequestDTO expenseRequestDTO){
+    public ExpenseResponseDTO addExpense(ExpenseRequestDTO dto){
 
         /* NOT USING as all rules loaded from DB and matching happens in java - CategoryMatcher.java
         List<VendorRule> rules = ruleService.getAllRules();
@@ -65,14 +59,28 @@ public class ExpenseService {
         */
 
         // USING this ---> Ask DB → find rule where vendor LIKE keyword
-        VendorRule rule = ruleService.getRule(expenseRequestDTO.getVendor());
-        String category = (rule != null) ? rule.getCategory() : "Others";
+        VendorRule rule = ruleService.getRule(dto.getVendor());
+        String category;
+
+        if(rule != null){
+            category = rule.getCategory();
+        }
+        else{
+            try {
+                category = aiService.categorizeExpense(
+                        dto.getVendor(),
+                        dto.getDescription()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         Expense expense = Expense.builder()
-                .date(expenseRequestDTO.getDate())
-                .amount(expenseRequestDTO.getAmount())
-                .vendor(expenseRequestDTO.getVendor())
-                .description(expenseRequestDTO.getDescription())
+                .date(dto.getDate())
+                .amount(dto.getAmount())
+                .vendor(dto.getVendor())
+                .description(dto.getDescription())
                 .category(category)
                 .build();
 
@@ -104,7 +112,22 @@ public class ExpenseService {
         // Re-assign category
         // USING this ---> Ask DB → find rule where vendor LIKE keyword
         VendorRule rule = ruleService.getRule(dto.getVendor());
-        String category = (rule != null) ? rule.getCategory() : "Others";
+        String category;
+
+        if(rule != null){
+            category = rule.getCategory();
+        }
+        else{
+            try {
+                category = aiService.categorizeExpense(
+                        dto.getVendor(),
+                        dto.getDescription()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         expense.setCategory(category);
 
         // Re-calculate anomaly

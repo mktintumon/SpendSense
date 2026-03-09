@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardService {
     private final ExpenseRepository expenseRepository;
+    private final AIService aiService;
 
     public DashboardResponseDTO getDashboard(int month, int year){
         List<Expense> expenseList = expenseRepository.findByMonth(month,year);
@@ -66,5 +67,10 @@ public class DashboardService {
                 .topVendors(topVendors)
                 .anomalies(anomalies)
                 .build();
+    }
+
+    public String generateInsights() throws Exception {
+        List<Expense> expenses = expenseRepository.findAll();
+        return aiService.generateFinancialInsights(expenses);
     }
 }

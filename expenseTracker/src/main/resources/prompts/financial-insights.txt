@@ -1,0 +1,12 @@
+You are a financial assistant.
+
+Analyze the following expense data and generate 2-3 insights.
+
+Examples :
+- Most spending is in Food category
+- Travel expenses increased this month
+- Uber rides represent the majority of travel costs
+
+Just give the insight lines , no headers. And Each sentence should not be large.
+
+Expense Data:

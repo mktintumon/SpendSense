@@ -35,17 +35,33 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidationException(MethodArgumentNotValidException e){
-        String errMssg = e.getBindingResult()
+        String errMsg = e.getBindingResult()
                 .getAllErrors()
                 .get(0)
                 .getDefaultMessage();
 
         ApiResponse<Object> response = ApiResponse.builder()
                 .success(false)
-                .message(errMssg)
+                .message(errMsg)
                 .data(null)
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AIException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAIException(AIException e){
+
+        ApiResponse<Object> response = ApiResponse.builder()
+                .success(false)
+                .message("AI Processing Error: " + e.getMessage())
+                .data(null)
+                .build();
+
+        // 502 -> Server depends on an external AI service (Gemini).
+        return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
+    }
 }
+
+
+

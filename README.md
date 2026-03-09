@@ -1,90 +1,96 @@
 # 🚀 SpendSense
 
-**Smart Expense Tracking with Rule-Based Categorization & Anomaly Detection**
+**AI-Powered Expense Tracking with Smart Categorization & Financial Insights**
 
-SpendSense is a full-stack expense analytics platform that helps users track, categorize, and analyze their spending.
-It supports rule-based vendor categorization, anomaly detection for unusual expenses, CSV uploads, and an interactive dashboard for financial insights.
+SpendSense is a full-stack expense analytics platform that helps users track, categorize, and analyze their spending.  
+It combines **rule-based logic with AI capabilities** to automatically categorize expenses, extract receipt information, and generate financial insights.
 
----
-
-## ✨ Features
-
-* ➕ Add, edit, and delete expenses
-* 📂 Upload expenses via CSV
-* 🧠 Rule-based vendor categorization
-* 🚨 Automatic anomaly detection (expense > 3× category average)
-* 📊 Dashboard with monthly analytics
-* 🏆 Top vendor spending insights
-* 📃 Server-side pagination
-* 🔍 Expense filtering & search by vendor
-* ⚠️ Global exception handling
-* 📚 REST APIs with Swagger documentation
+The system supports **CSV uploads, receipt scanning, anomaly detection, and an interactive analytics dashboard**.
 
 ---
 
-## 🛠 Tech Stack
+# ✨ Features
 
-### Backend
+### Core Features
 
-* Java
-* Spring Boot
-* Spring Data JPA
-* MySQL
-* Swagger (OpenAPI)
-* Lombok
+- ➕ Add, edit, and delete expenses
+- 📂 Upload expenses via CSV
+- 🧠 Rule-based vendor categorization
+- 🚨 Automatic anomaly detection (expense > 3× category average)
+- 📊 Dashboard with monthly analytics
+- 🏆 Top vendor spending insights
+- 📃 Server-side pagination
+- 🔍 Expense filtering & vendor search
+- ⚠️ Global exception handling
+- 📚 REST APIs with Swagger documentation
 
-### Frontend
+---
 
-* React
-* TypeScript
-* Material UI
-* Axios
+# 🤖 AI Features
 
+SpendSense integrates **Google Gemini AI** to enhance expense analysis.
+
+### 📷 Receipt Scanning
+Upload a receipt image and AI will extract:
+- Vendor name
+- Total amount
+- Transaction date
+- Description
+
+### 🧠 Smart Expense Categorization
+AI suggests the correct category using:
+- Vendor name
+- Expense description
+
+### 📊 AI Financial Insights
+AI analyzes spending patterns and generates insights like:
+- Spending trends
+- Overspending warnings
+- Category-based suggestions
+
+---
+
+# 🛠 Tech Stack
+
+```
+## Backend
+- Java
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- WebClient
+- Google Gemini API
+- Swagger (OpenAPI)
+- Lombok
+
+## Frontend
+- React
+- TypeScript
+- Material UI
+- Axios
+```
 ---
 
 ## 🏗 System Architecture
 
 ```
 React (UI)
-     │
+│
 Axios API Layer
-     │
+│
 Spring Boot REST APIs
-     │
+│
 Service Layer
-     │
+│
+AIService (Gemini Integration)
+│
 JPA Repository
-     │
+│
 MySQL Database
 ```
 
 ---
 
-## 📂 Project Structure
-
-```
-spendsense
-│
-├── backend
-│   ├── controller
-│   ├── service
-│   ├── repository
-│   ├── dto
-│   ├── model
-│   ├── exception
-│   └── config
-│
-├── frontend
-│   ├── components
-│   ├── api
-│   ├── pages
-│
-└── README.md
-```
-
-
-
----
 
 ## ▶ Running the Project
 
@@ -139,6 +145,14 @@ http://localhost:8081/swagger-ui/index.html
   "description": "Dinner order"
 }
 ```
+---
+
+## Environment Configuration
+
+# Add your Gemini API configuration in application.properties.
+
+* gemini.api.URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={KEY}
+* gemini.api.API_KEY=YOUR_API_KEY
 
 ---
 
@@ -150,14 +164,8 @@ SpendSense dashboard provides:
 * Top 5 vendors by spend
 * Anomaly detection alerts
 * Category-wise analytics
+* AI-generated financial insights
 
----
-
-## 🚀 Future Improvements
-
-* Authentication (JWT)
-* Mobile-optimized UI
-* AI-based features
 
 ---
 
