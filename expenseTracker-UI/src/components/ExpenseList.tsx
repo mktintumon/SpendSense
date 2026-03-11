@@ -13,6 +13,7 @@ import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import CsvUpload from "./CsvUpload";
 import ExpenseForm from "./ExpenseForm";
 import { useSnackbar } from "notistack";
+import ReceiptUpload from "./ReceiptUpload";
 
 
 
@@ -40,6 +41,8 @@ function ExpenseList() {
   const[search, setSearch] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  const[preFilledData, setPreFilledData] = useState<any | null>(null);
 
 
   const fetchExpenses = async () => {
@@ -72,6 +75,13 @@ function ExpenseList() {
     setOpenModal(false);
     fetchExpenses();
   };
+
+
+  const handleReceiptParsed = (data: any) => {
+    setPreFilledData(data);
+    setEditData(null);
+    setOpenModal(true);
+  }
 
 
   useEffect(() => {
@@ -166,6 +176,10 @@ function ExpenseList() {
             Add Expense
           </Button>
 
+          {/* functionality to pre-fill the form with parsed receipt data */}
+          <ReceiptUpload onParsed={handleReceiptParsed} />
+
+          {/* CSV upload functionality to bulk upload expenses from a CSV file */}
           <CsvUpload />
         </Box>
       </Box>
@@ -206,9 +220,11 @@ function ExpenseList() {
             <ExpenseForm
               onClose={() => {
                 setEditData(null);
+                setPreFilledData(null);
                 handleCloseModal();
               }}
               existingData={editData}
+              aiData={preFilledData}
             />
           </Box>
         </DialogContent>

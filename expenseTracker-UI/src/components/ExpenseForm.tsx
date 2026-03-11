@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, CircularProgress  } from "@mui/material";
 import API from "../api/api";
 import { useSnackbar } from "notistack";
 
 interface ExpenseFormProps {
   onClose?: () => void;
   existingData?: any;
+  aiData?: any;
 }
 
-function ExpenseForm({ onClose, existingData }: ExpenseFormProps) {
+function ExpenseForm({ onClose, existingData, aiData }: ExpenseFormProps) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const[loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     date: "",
@@ -28,7 +31,15 @@ function ExpenseForm({ onClose, existingData }: ExpenseFormProps) {
         description: existingData.description || "",
       });
     } 
-  }, [existingData]);
+    else if (aiData) {
+      setForm({
+        date: aiData.date || "",
+        amount: aiData.amount ? String(aiData.amount) : "",
+        vendor: aiData.vendor || "",
+        description: aiData.description || "",
+      });
+  }
+  }, [existingData, aiData]);
 
 
   const handleChange = (e: any) => {
@@ -37,26 +48,36 @@ function ExpenseForm({ onClose, existingData }: ExpenseFormProps) {
 
 
   const handleSubmit = async () => {
-    if (existingData) {
-      // Update existing expense
-      await API.put(`/updateExpense/${existingData.id}`, {
-        ...form,
-        amount: Number(form.amount),
-      });
 
-      enqueueSnackbar("Expense updated successfully", { variant: "success" });
+    try {
+      setLoading(true);
 
-    } else {
-      // Add new expense
-      await API.post("/addExpense", {
-        ...form,
-        amount: Number(form.amount),
-      });
+      if (existingData) {
 
-      enqueueSnackbar("Expense added successfully", { variant: "success" });
+        await API.put(`/updateExpense/${existingData.id}`, {
+          ...form,
+          amount: Number(form.amount),
+        });
+
+        enqueueSnackbar("Expense updated successfully", { variant: "success" });
+
+      } else {
+
+        await API.post("/addExpense", {
+          ...form,
+          amount: Number(form.amount),
+        });
+
+        enqueueSnackbar("Expense added successfully", { variant: "success" });
+      }
+
+      onClose && onClose();
+
+    } catch (err) {
+      enqueueSnackbar("Operation failed", { variant: "error" });
+    } finally {
+      setLoading(false);
     }
-
-    onClose && onClose();
   };
 
   return (
@@ -90,8 +111,23 @@ function ExpenseForm({ onClose, existingData }: ExpenseFormProps) {
         multiline
         rows={3}
       />
-      <Button variant="contained" onClick={handleSubmit}>
-        {existingData ? "Update Expense" : "Add Expense"}
+      <Button
+        variant="contained"
+        onClick={handleSubmit}
+        disabled={
+          loading ||
+          !form.date ||
+          !form.amount ||
+          !form.vendor
+        }
+      >
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : existingData ? (
+          "Update Expense"
+        ) : (
+          "Add Expense"
+        )}
       </Button>
     </Box>
   );

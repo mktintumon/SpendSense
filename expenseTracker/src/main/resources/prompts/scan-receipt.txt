@@ -1,4 +1,6 @@
-Extract receipt information from this image. Description field should be short like 20 characters
+Extract receipt information from this image.
+Description field should be short like 20 characters.
+And date field should in format of "yyyy-mm-dd" , example - "2026-02-21"
 
 Return ONLY valid JSON.
 

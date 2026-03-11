@@ -8,6 +8,12 @@ import {
   Typography,
   Grid,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import {
   Bar,
@@ -51,6 +57,10 @@ function Dashboard() {
   const [year, setYear] = useState<number>(currentYear);
   const [loading, setLoading] = useState<boolean>(true); // Added loading state
 
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [insights, setInsights] = useState<string[]>([]);
+  const [insightLoading, setInsightLoading] = useState(false);
+
   const fetchDashboard = async () => {
     setLoading(true);
     try {
@@ -75,9 +85,28 @@ function Dashboard() {
     }
   };
 
+
+  const fetchInsights = async () => {
+    setInsightLoading(true);
+
+    try {
+      const result = await API.get<string>("/insights");
+
+      const parsedInsights = result.split("\n");
+
+      setInsights(parsedInsights);
+      setInsightsOpen(true);
+    } catch (error) {
+      console.error("Error fetching insights", error);
+    } finally {
+      setInsightLoading(false);
+    }
+};
+
   useEffect(() => {
     fetchDashboard();
   }, []);
+
 
   // Helper to render "No Data" placeholder
   const NoDataPlaceholder = () => (
@@ -100,7 +129,7 @@ function Dashboard() {
   );
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ p: 4, mt: -5 }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
         Dashboard
       </Typography>
@@ -108,43 +137,59 @@ function Dashboard() {
       <Box
         sx={{
           display: "flex",
-          gap: 2,
-          mb: 5,
+          justifyContent: "space-between",
+          alignItems: "center",
           p: 2,
           bgcolor: "#f5f5f5",
           borderRadius: 2,
         }}
       >
-        <TextField
-          select
-          label="Month"
-          value={month}
-          onChange={(e) => setMonth(Number(e.target.value))}
-          sx={{ minWidth: 150 }}
-        >
-          {MONTHS.map((m) => (
-            <MenuItem key={m.value} value={m.value}>
-              {m.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <TextField
+            select
+            label="Month"
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            sx={{ minWidth: 150 }}
+          >
+            {MONTHS.map((m) => (
+              <MenuItem key={m.value} value={m.value}>
+                {m.name}
+              </MenuItem>
+            ))}
+          </TextField>
 
-        <TextField
-          select
-          label="Year"
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          sx={{ minWidth: 120 }}
-        >
-          {YEARS.map((y) => (
-            <MenuItem key={y} value={y}>
-              {y}
-            </MenuItem>
-          ))}
-        </TextField>
+          <TextField
+            select
+            label="Year"
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            sx={{ minWidth: 120 }}
+          >
+            {YEARS.map((y) => (
+              <MenuItem key={y} value={y}>
+                {y}
+              </MenuItem>
+            ))}
+          </TextField>
 
-        <Button variant="contained" onClick={fetchDashboard} disabled={loading}>
-          {loading ? "Loading..." : "Show Data"}
+          <Button
+            variant="contained"
+            onClick={fetchDashboard}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Show Data"}
+          </Button>
+        </Box>
+
+        {/* Insights Button */}
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={fetchInsights}
+          disabled={insightLoading}
+        >
+          {insightLoading ? "Generating..." : "Analyze My Spending"}
         </Button>
       </Box>
 
@@ -208,6 +253,26 @@ function Dashboard() {
           </Paper>
         </Grid>
       </Grid>
+
+       {/* AI Insights Dialog */}
+      <Dialog
+        open={insightsOpen}
+        onClose={() => setInsightsOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle style={{color:"blue", fontWeight:"bold"}}>Smart Spending Insights</DialogTitle>
+
+        <DialogContent>
+          <List>
+            {insights.map((insight, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={`• ${insight}`} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

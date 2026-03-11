@@ -29,7 +29,7 @@ instance.interceptors.response.use(
 
 
 
-/*  GETTING THIS ERROR IN COMPONENTS AFTER ADDING RESPONSE INTERCEPTOR, 
+/*  FIX :: GETTING THIS ERROR IN COMPONENTS AFTER ADDING RESPONSE INTERCEPTOR, 
     BECAUSE NOW API METHODS RETURN UNWRAPPED DATA (T) INSTEAD OF AXIOS RESPONSE
 
 Argument of type 'AxiosResponse<any, any, {}>' is not assignable to parameter of type 'SetStateAction<Expense[]>'
@@ -38,10 +38,10 @@ const result: AxiosResponse<any, any, {}>
 */
 
 const API = {
-  get: <T>(url: string) => instance.get<any, T>(url),
-  post: <T>(url: string, body?: any) => instance.post<any, T>(url, body),
-  put: <T>(url: string, body?: any) => instance.put<any, T>(url, body),
-  delete: <T>(url: string) => instance.delete<any, T>(url),
+  get: async <T>(url: string): Promise<T> => instance.get(url),
+  post: async <T>(url: string, body?: any): Promise<T> => instance.post(url, body),
+  put: async <T>(url: string, body?: any): Promise<T> => instance.put(url, body),
+  delete: async <T>(url: string): Promise<T> => instance.delete(url),
 };
 
 export default API;
