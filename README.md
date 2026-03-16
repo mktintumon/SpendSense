@@ -1,52 +1,92 @@
 # 🚀 SpendSense
 
-**AI-Powered Expense Tracking with Smart Categorization & Financial Insights**
+**AI-Powered Expense Tracking & Financial Insights Platform**
 
-SpendSense is a full-stack expense analytics platform that helps users track, categorize, and analyze their spending.  
-It combines **rule-based logic with AI capabilities** to automatically categorize expenses, extract receipt information, and generate financial insights.
+SpendSense is a **full-stack expense analytics application** that helps users **track, categorize, and analyze their spending intelligently**.
 
-The system supports **CSV uploads, receipt scanning, anomaly detection, and an interactive analytics dashboard**.
+The platform combines **rule-based logic with AI capabilities** to automatically categorize expenses, extract data from receipts, and generate meaningful financial insights.
+
+It also includes **JWT-based authentication, interactive dashboards, anomaly detection, and AI-powered spending analysis.**
 
 ---
 
 # ✨ Features
 
-### Core Features
+## 🔐 Authentication & Security
 
-- ➕ Add, edit, and delete expenses
-- 📂 Upload expenses via CSV
-- 🧠 Rule-based vendor categorization
-- 🚨 Automatic anomaly detection (expense > 3× category average)
-- 📊 Dashboard with monthly analytics
-- 🏆 Top vendor spending insights
-- 📃 Server-side pagination
-- 🔍 Expense filtering & vendor search
-- ⚠️ Global exception handling
-- 📚 REST APIs with Swagger documentation
+- JWT-based authentication
+- Secure **HTTP-only cookie sessions**
+- Protected React routes
+- Global API error handling
+- Authentication check endpoint
 
 ---
 
-# 🤖 AI Features
+## 💰 Expense Management
 
-SpendSense integrates **Google Gemini AI** to enhance expense analysis.
+- ➕ Add expenses manually
+- ✏️ Edit existing expenses
+- ❌ Delete expenses
+- 🔍 Vendor-based expense search
+- 📃 Server-side pagination for large datasets
 
-### 📷 Receipt Scanning
-Upload a receipt image and AI will extract:
+---
+
+## 📂 Bulk Upload
+
+- Upload expenses using **CSV files**
+- Automatic parsing and storage
+- Validation and error handling
+
+---
+
+## 🧠 Smart Categorization
+
+Rule-based vendor mapping automatically categorizes expenses.
+
+Example:
+Swiggy → Food
+Uber → Travel
+Amazon → Shopping
+
+
+----
+
+## 🤖 AI Features (Google Gemini)
+
+SpendSense integrates **Google Gemini AI** to enhance financial analysis.
+
+### 📷 Receipt Scanner
+
+Upload receipt images (`jpeg / png`) and AI extracts:
+
 - Vendor name
-- Total amount
+- Transaction amount
 - Transaction date
 - Description
 
-### 🧠 Smart Expense Categorization
-AI suggests the correct category using:
+Automatically populates the expense form.
+
+---
+
+### 🧠 AI Expense Categorization
+
+AI analyzes:
+
 - Vendor name
 - Expense description
 
+and suggests the most relevant category.
+
+---
+
 ### 📊 AI Financial Insights
-AI analyzes spending patterns and generates insights like:
+
+AI analyzes your expense history and generates insights like:
+
 - Spending trends
-- Overspending warnings
-- Category-based suggestions
+- Overspending alerts
+- Category-based recommendations
 
 ---
 
@@ -56,6 +96,8 @@ AI analyzes spending patterns and generates insights like:
 ## Backend
 - Java
 - Spring Boot
+- Spring Security
+- JWT Authentication
 - Spring Data JPA
 - MySQL
 - WebClient
@@ -68,6 +110,8 @@ AI analyzes spending patterns and generates insights like:
 - TypeScript
 - Material UI
 - Axios
+- Notistack (Snackbar Notifications)
+- Recharts (Analytics Visualization)
 ```
 ---
 
@@ -80,11 +124,13 @@ Axios API Layer
 │
 Spring Boot REST APIs
 │
+Authentication Layer (JWT + Cookies)
+│
 Service Layer
 │
 AIService (Gemini Integration)
 │
-JPA Repository
+Spring Data JPA
 │
 MySQL Database
 ```
@@ -153,19 +199,6 @@ http://localhost:8081/swagger-ui/index.html
 
 * gemini.api.URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={KEY}
 * gemini.api.API_KEY=YOUR_API_KEY
-
----
-
-## 📊 Dashboard Insights
-
-SpendSense dashboard provides:
-
-* Monthly category spending totals
-* Top 5 vendors by spend
-* Anomaly detection alerts
-* Category-wise analytics
-* AI-generated financial insights
-
 
 ---
 
