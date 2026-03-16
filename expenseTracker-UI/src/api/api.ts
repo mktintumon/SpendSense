@@ -3,9 +3,8 @@ import { enqueueSnackbar } from "notistack";
 
 const instance = axios.create({
   baseURL: "http://localhost:8081/api",
+  withCredentials: true,
 });
-
-
 
 /*
  Response interceptor
@@ -18,23 +17,31 @@ instance.interceptors.response.use(
     return response.data.data;
   },
   (error) => {
-    const message =
-      error?.response?.data?.message || "Something went wrong";
+
+    const url = error?.config?.url || "";
+
+    const isAuthCheck = url.includes("/auth/check");
+
+    // silent fail for auth check
+    if (isAuthCheck) {
+      return Promise.reject(error);
+    }
+
+    const message = error?.response?.data?.message || "Something went wrong";
 
     enqueueSnackbar(message, { variant: "error" });
 
     return Promise.reject(error);
-  }
+  },
 );
-
-
 
 /*  FIX :: GETTING THIS ERROR IN COMPONENTS AFTER ADDING RESPONSE INTERCEPTOR, 
     BECAUSE NOW API METHODS RETURN UNWRAPPED DATA (T) INSTEAD OF AXIOS RESPONSE
 
 Argument of type 'AxiosResponse<any, any, {}>' is not assignable to parameter of type 'SetStateAction<Expense[]>'
-const result: AxiosResponse<any, any, {}>Argument of type 'AxiosResponse<any, any, {}>' is not assignable to parameter of type 'SetStateAction<Expense[]>
-const result: AxiosResponse<any, any, {}>
+const result: AxiosResponse<any, any, {}>Argument of type 'AxiosResponse<any, any, {}>' 
+            is not assignable to parameter of type 'SetStateAction<Expense[]>
+
 */
 
 const API = {

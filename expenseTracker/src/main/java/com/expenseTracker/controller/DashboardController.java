@@ -20,7 +20,6 @@ import java.util.List;
 public class DashboardController {
 
     private final DashboardService dashboardService;
-    private final AIService aiService;
 
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<DashboardResponseDTO>> getDashboard(@RequestParam int month, @RequestParam int year){

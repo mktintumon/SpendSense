@@ -1,36 +1,56 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { AppBar, Toolbar, Button, Container } from "@mui/material";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Container } from "@mui/material";
 import ExpenseList from "./components/ExpenseList";
-// import ExpenseForm from "./components/ExpenseForm";
-// import CsvUpload from "./components/CsvUpload";
-import Dashboard from "./components/Dashboard";
-import AnomalyScreen from "./components/AnomalyScreen";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import NavBar from "./components/NavBar"; // Import the new NavBar
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import AnomalyScreen from "./pages/AnomalyScreen";
+import { AuthProvider } from "./api/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppBar position="static">
-        <Toolbar>
-          <Button color="inherit" component={Link} to="/">Expenses</Button>
-          <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
-          <Button color="inherit" component={Link} to="/anomalies">Anomalies</Button>
-        </Toolbar>
-      </AppBar>
+    <AuthProvider>
+      <BrowserRouter>
+      
+        <NavBar />
 
-      <Container sx={{ mt: 4 }}>
-        <Routes>
-          <Route path="/" element={
-            <>
-              {/* <ExpenseForm />
-              <CsvUpload /> */}
-              <ExpenseList />
-            </>
-          } />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/anomalies" element={<AnomalyScreen />} />
-        </Routes>
-      </Container>
-    </BrowserRouter>
+        <Container sx={{ mt: 4 }}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <ExpenseList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/anomalies"
+              element={
+                <ProtectedRoute>
+                  <AnomalyScreen />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Container>
+        
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

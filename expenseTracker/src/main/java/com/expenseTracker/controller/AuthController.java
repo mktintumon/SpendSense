@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<ApiResponse<String>> login(
-            @Valid AuthRequest authRequest,
+            @Valid @RequestBody AuthRequest authRequest,
             HttpServletResponse response
     ){
         boolean validData = authService.validate(
@@ -71,6 +72,20 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Logged out successfully", null)
+        );
+    }
+
+
+    @GetMapping("/auth/check")
+    public ResponseEntity<ApiResponse<String>> checkAuth(Authentication authentication) {
+
+        if(authentication == null){
+            return ResponseEntity.status(401)
+                    .body(new ApiResponse<>(false,"Not authenticated",null));
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true,"Authenticated",authentication.getName())
         );
     }
 }
